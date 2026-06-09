@@ -45,3 +45,10 @@
   dedicated body section. The NPI scenarios container uses scrolling when multiple
   scenarios are added, keeping the sidebar compact. Added placeholder text and
   empty-state messaging for better UX.
+- Added epidemic outcome summary tables below the epidemic curve plot. Two tables
+  display after a successful model run: (1) Epidemic Summary showing total
+  infections, hospitalizations, and deaths per scenario (median across R0
+  samples), and (2) Economic Costs by Domain showing costs in million USD PPP
+  broken down by economic, education, life value, and life years lost. Uses
+  `daedalus.compare::get_summary_data()` and `get_cost_data()` to extract
+  outcomes from model results.

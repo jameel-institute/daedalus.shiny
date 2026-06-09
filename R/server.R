@@ -241,6 +241,42 @@ server <- function(input, output, session) {
     )
   })
 
+  epi_summary_table <- shiny::reactive({
+    shiny::req(rv$model_run, rv$model_result, length(rv$disease_tags) > 0)
+    raw <- daedalus.compare::get_summary_data(rv$model_result, rv$disease_tags)
+    dt <- data.table::setDT(raw)
+    agg <- dt[, list(value = median(value)), by = c("response", "measure")]
+    wide <- data.table::dcast(agg, response ~ measure, value.var = "value")
+    data.table::setnames(
+      wide,
+      c("response", "epidemic_size", "total_hospitalisations", "total_deaths"),
+      c("Scenario", "Infections", "Hospitalisations", "Deaths"),
+      skip_absent = TRUE
+    )
+    data.table::setDF(wide)
+  })
+
+  cost_summary_table <- shiny::reactive({
+    shiny::req(rv$model_run, rv$model_result, length(rv$disease_tags) > 0)
+    raw <- daedalus.compare::get_cost_data(rv$model_result, rv$disease_tags)
+    dt <- data.table::setDT(raw)
+    agg <- dt[, list(cost = median(cost)), by = c("response", "domain")]
+    wide <- data.table::dcast(agg, response ~ domain, value.var = "cost")
+    data.table::setnames(
+      wide,
+      c("response", "economic", "education", "life_value", "life_years"),
+      c(
+        "Scenario",
+        "Economic (M USD)",
+        "Education (M USD)",
+        "Life value (M USD)",
+        "Life years lost"
+      ),
+      skip_absent = TRUE
+    )
+    data.table::setDF(wide)
+  })
+
   output$status_output <- shiny::renderText({
     if (rv$model_run || nchar(rv$status_message) > 0) {
       rv$status_message
@@ -269,5 +305,44 @@ server <- function(input, output, session) {
         col = "Response scenario"
       ) +
       ggplot2::theme_bw()
+  })
+
+  output$epi_summary_table <- shiny::renderTable(
+    {
+      if (!rv$model_run) {
+        return(NULL)
+      }
+      epi_summary_table()
+    },
+    digits = 0
+  )
+
+  output$cost_summary_table <- shiny::renderTable(
+    {
+      if (!rv$model_run) {
+        return(NULL)
+      }
+      cost_summary_table()
+    },
+    digits = 1
+  )
+
+  output$summary_section <- shiny::renderUI({
+    if (!rv$model_run) {
+      return(NULL)
+    }
+    shiny::tagList(
+      shiny::hr(),
+      shiny::h4("Epidemic Summary"),
+      shiny::p("Median across R0 samples.", style = "color: #666;"),
+      shiny::tableOutput("epi_summary_table"),
+      shiny::hr(),
+      shiny::h4("Economic Costs by Domain"),
+      shiny::p(
+        "Median costs in million USD PPP across R0 samples.",
+        style = "color: #666;"
+      ),
+      shiny::tableOutput("cost_summary_table")
+    )
   })
 }

@@ -89,7 +89,8 @@ ui <- shiny::fluidPage(
     ),
     mainPanel = shiny::mainPanel(
       shiny::textOutput("status_output"),
-      shiny::plotOutput("epicurve_plot")
+      shiny::plotOutput("epicurve_plot"),
+      shiny::uiOutput("summary_section")
     )
   )
 )
