@@ -1,0 +1,28 @@
+Package: daedalus.shiny
+Title: Shiny Dashboard Interface for Daedalus.Compare
+Version: 0.0.0.9000
+Authors@R:
+    person("Pratik", "Gupte", , "pratikgupte16@gmail.com", role = c("aut", "cre"))
+Description: A Shiny dashboard that exposes the full functionality of the
+    DAEDALUS epidemiological-economic model, supporting multiple NPI
+    scenarios, infection parameter uncertainty, and vaccination strategies,
+    using the package daedalus.compare.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
+Imports:
+    checkmate,
+    daedalus,
+    daedalus.compare,
+    daedalus.data,
+    data.table,
+    distributional,
+    ggplot2,
+    shiny
+Suggests:
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+Remotes:
+    jameel-institute/daedalus,
+    jameel-institute/daedalus.compare
